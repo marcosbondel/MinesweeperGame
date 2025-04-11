@@ -1,0 +1,66 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css";
+
+.container-app {
+    margin: 2rem auto;
+    max-width: 80rem;
+}
+
+
+.config-icon {
+    color: white;
+    text-decoration: none;
+    font-size: 2em;
+}
+
+.play-icon {
+    color: black;
+    text-decoration: none;
+    font-size: 2em;
+}
+
+    
+.card-home-content {
+    margin: 2rem auto;
+    padding: 1rem;
+    width: 20rem;
+    height: 20rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 1rem;
+}
+
+
+.card-home-content-settings {
+    background-color: #2e333d;
+}
+
+.card-home-content-play {
+    background-color: #04d1b2;
+}
+
+.card-home-content-settings, 
+.card-home-content-play {
+    transition: background-color 0.09s ease-in-out 0.09s; /* 0.3s duration with a 0.2s delay */
+}
+
+.card-home-content-settings:hover {
+    background-color: #727781;
+    cursor: pointer;
+}
+
+.card-home-content-play:hover {
+    background-color: #068774;
+    cursor: pointer;
+    color: white;
+}
+
+
+.button-board {
+    padding: 0;
+    margin: 0;
+    height: 3rem;
+    width: 3rem;
+} 

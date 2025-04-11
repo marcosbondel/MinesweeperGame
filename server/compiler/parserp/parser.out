@@ -1,0 +1,200 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    MLINE_COMMENT
+    OLINE_COMMENT
+
+Grammar
+
+Rule 0     S' -> config
+Rule 1     config -> INIT_DELIMITER statements FINAL_DELIMITER
+Rule 2     statements -> statement
+Rule 3     statements -> statements statement
+Rule 4     statement -> add_statement
+Rule 5     statement -> newline
+Rule 6     add_statement -> ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER
+Rule 7     newline -> <empty>
+
+Terminals, with rules where they appear
+
+ADD                  : 6
+COLON                : 6 6
+COMMA                : 6
+FINAL_DELIMITER      : 1
+INIT_DELIMITER       : 1
+MLINE_COMMENT        : 
+NUMBER               : 6 6
+OLINE_COMMENT        : 
+X_COORD              : 6
+Y_COORD              : 6
+error                : 
+
+Nonterminals, with rules where they appear
+
+add_statement        : 4
+config               : 0
+newline              : 5
+statement            : 2 3
+statements           : 1 3
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . config
+    (1) config -> . INIT_DELIMITER statements FINAL_DELIMITER
+
+    INIT_DELIMITER  shift and go to state 2
+
+    config                         shift and go to state 1
+
+state 1
+
+    (0) S' -> config .
+
+
+
+state 2
+
+    (1) config -> INIT_DELIMITER . statements FINAL_DELIMITER
+    (2) statements -> . statement
+    (3) statements -> . statements statement
+    (4) statement -> . add_statement
+    (5) statement -> . newline
+    (6) add_statement -> . ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER
+    (7) newline -> .
+
+  ! shift/reduce conflict for ADD resolved as shift
+    ADD             shift and go to state 7
+    FINAL_DELIMITER reduce using rule 7 (newline -> .)
+
+  ! ADD             [ reduce using rule 7 (newline -> .) ]
+
+    statements                     shift and go to state 3
+    statement                      shift and go to state 4
+    add_statement                  shift and go to state 5
+    newline                        shift and go to state 6
+
+state 3
+
+    (1) config -> INIT_DELIMITER statements . FINAL_DELIMITER
+    (3) statements -> statements . statement
+    (4) statement -> . add_statement
+    (5) statement -> . newline
+    (6) add_statement -> . ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER
+    (7) newline -> .
+
+  ! shift/reduce conflict for FINAL_DELIMITER resolved as shift
+  ! shift/reduce conflict for ADD resolved as shift
+    FINAL_DELIMITER shift and go to state 8
+    ADD             shift and go to state 7
+
+  ! FINAL_DELIMITER [ reduce using rule 7 (newline -> .) ]
+  ! ADD             [ reduce using rule 7 (newline -> .) ]
+
+    statement                      shift and go to state 9
+    add_statement                  shift and go to state 5
+    newline                        shift and go to state 6
+
+state 4
+
+    (2) statements -> statement .
+
+    FINAL_DELIMITER reduce using rule 2 (statements -> statement .)
+    ADD             reduce using rule 2 (statements -> statement .)
+
+
+state 5
+
+    (4) statement -> add_statement .
+
+    FINAL_DELIMITER reduce using rule 4 (statement -> add_statement .)
+    ADD             reduce using rule 4 (statement -> add_statement .)
+
+
+state 6
+
+    (5) statement -> newline .
+
+    FINAL_DELIMITER reduce using rule 5 (statement -> newline .)
+    ADD             reduce using rule 5 (statement -> newline .)
+
+
+state 7
+
+    (6) add_statement -> ADD . X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER
+
+    X_COORD         shift and go to state 10
+
+
+state 8
+
+    (1) config -> INIT_DELIMITER statements FINAL_DELIMITER .
+
+    $end            reduce using rule 1 (config -> INIT_DELIMITER statements FINAL_DELIMITER .)
+
+
+state 9
+
+    (3) statements -> statements statement .
+
+    FINAL_DELIMITER reduce using rule 3 (statements -> statements statement .)
+    ADD             reduce using rule 3 (statements -> statements statement .)
+
+
+state 10
+
+    (6) add_statement -> ADD X_COORD . COLON NUMBER COMMA Y_COORD COLON NUMBER
+
+    COLON           shift and go to state 11
+
+
+state 11
+
+    (6) add_statement -> ADD X_COORD COLON . NUMBER COMMA Y_COORD COLON NUMBER
+
+    NUMBER          shift and go to state 12
+
+
+state 12
+
+    (6) add_statement -> ADD X_COORD COLON NUMBER . COMMA Y_COORD COLON NUMBER
+
+    COMMA           shift and go to state 13
+
+
+state 13
+
+    (6) add_statement -> ADD X_COORD COLON NUMBER COMMA . Y_COORD COLON NUMBER
+
+    Y_COORD         shift and go to state 14
+
+
+state 14
+
+    (6) add_statement -> ADD X_COORD COLON NUMBER COMMA Y_COORD . COLON NUMBER
+
+    COLON           shift and go to state 15
+
+
+state 15
+
+    (6) add_statement -> ADD X_COORD COLON NUMBER COMMA Y_COORD COLON . NUMBER
+
+    NUMBER          shift and go to state 16
+
+
+state 16
+
+    (6) add_statement -> ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER .
+
+    FINAL_DELIMITER reduce using rule 6 (add_statement -> ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER .)
+    ADD             reduce using rule 6 (add_statement -> ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for ADD in state 2 resolved as shift
+WARNING: shift/reduce conflict for FINAL_DELIMITER in state 3 resolved as shift
+WARNING: shift/reduce conflict for ADD in state 3 resolved as shift
