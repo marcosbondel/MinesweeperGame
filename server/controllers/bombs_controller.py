@@ -32,29 +32,6 @@ def create_bomb():
 
     return respond_with_success('Bomb created successfully')
 
-@BombBlueprint.route('/bombs.json', methods=['DELETE'])
-def delete_bomb():
-    bombs = Ram.get_bombs()
-    x = request.args.get('x')
-    y = request.args.get('y')
-
-    # We check coordinates
-    if not x or not y:
-        return respond_with_error("Missing coordinates")
-    
-    if not x.isdigit() or not y.isdigit():
-        return respond_with_error("Coordinates must be integers")
-
-    if int(x) < 1 or int(x) > 4 or int(y) < 1 or int(y) > 4:
-        return respond_with_error("Coordinates out of range")
-
-    for bomb in bombs:
-        if bomb.x == int(x) and bomb.y == int(y):
-            Ram.set_bombs([bomb for bomb in bombs if bomb.x != int(x) and bomb.y != int(y)])
-            return respond_with_success('Bomb deleted successfully')
-
-    return respond_with_not_found()
-
 @BombBlueprint.route('/bombs/matrix.json')
 def bombs_matrix():
     response_data = {
@@ -93,6 +70,7 @@ def verify_bomb():
     Ram.increment_points()
 
     if Ram.points == np.size(Ram.bombs_matrix_representation) - np.count_nonzero(Ram.bombs_matrix_representation):
+        Ram.won()
         Ram.reset_game()
         return respond_with_success('WIN')
 

@@ -173,8 +173,7 @@ onMounted(async () => {
             <button 
                 class="button is-info" 
                 @click="handleImportClick"
-                type="button"
-            >
+                type="button">
                 <span class="icon-text">
                     <span class="icon">
                         <i class="fa-solid fa-upload"></i>

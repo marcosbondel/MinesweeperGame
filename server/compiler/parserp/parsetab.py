@@ -6,7 +6,7 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ADD COLON COMMA FINAL_DELIMITER INIT_DELIMITER MLINE_COMMENT NUMBER OLINE_COMMENT X_COORD Y_COORDconfig : INIT_DELIMITER statements FINAL_DELIMITERstatements : statement\n| statements statementstatement : add_statement\n| newlineadd_statement : ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBERnewline : '
+_lr_signature = 'ADD COLON COMMA FINAL_DELIMITER INIT_DELIMITER MLINE_COMMENT NUMBER OLINE_COMMENT X_COORD Y_COORDconfig : INIT_DELIMITER statements FINAL_DELIMITERstatements : statement\n                  | statements statementstatement : add_statement\n                 | newlineadd_statement : ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBERnewline : '
     
 _lr_action_items = {'INIT_DELIMITER':([0,],[2,]),'$end':([1,8,],[0,-1,]),'ADD':([2,3,4,5,6,9,16,],[7,7,-2,-4,-5,-3,-6,]),'FINAL_DELIMITER':([2,3,4,5,6,9,16,],[-7,8,-2,-4,-5,-3,-6,]),'X_COORD':([7,],[10,]),'COLON':([10,14,],[11,15,]),'NUMBER':([11,15,],[12,16,]),'COMMA':([12,],[13,]),'Y_COORD':([13,],[14,]),}
 
@@ -27,11 +27,11 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> config","S'",1,None,None,None),
-  ('config -> INIT_DELIMITER statements FINAL_DELIMITER','config',3,'p_config','parser.py',6),
-  ('statements -> statement','statements',1,'p_statements','parser.py',10),
-  ('statements -> statements statement','statements',2,'p_statements','parser.py',11),
-  ('statement -> add_statement','statement',1,'p_statement','parser.py',18),
-  ('statement -> newline','statement',1,'p_statement','parser.py',19),
-  ('add_statement -> ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER','add_statement',8,'p_add_statement','parser.py',24),
-  ('newline -> <empty>','newline',0,'p_newline','parser.py',31),
+  ('config -> INIT_DELIMITER statements FINAL_DELIMITER','config',3,'p_config','parser.py',7),
+  ('statements -> statement','statements',1,'p_statements','parser.py',11),
+  ('statements -> statements statement','statements',2,'p_statements','parser.py',12),
+  ('statement -> add_statement','statement',1,'p_statement','parser.py',19),
+  ('statement -> newline','statement',1,'p_statement','parser.py',20),
+  ('add_statement -> ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBER','add_statement',8,'p_add_statement','parser.py',25),
+  ('newline -> <empty>','newline',0,'p_newline','parser.py',37),
 ]
