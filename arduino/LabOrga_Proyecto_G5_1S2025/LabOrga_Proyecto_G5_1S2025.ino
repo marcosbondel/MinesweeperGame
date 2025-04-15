@@ -6,8 +6,15 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // LED Matrix Pins
-const int columnas[4] = {40, 42, 44, 46};
+// const int columnas[4] = {40, 42, 44, 46};
+// const int filas[4] = {48, 50, 52, 53};
+const int columnas[8] = {40, 42, 44, 46, 51, 49, 47, 45};
 const int filas[4] = {48, 50, 52, 53};
+
+// LEDS for manageing statuses: blue, green and red
+const int blueLEDPin = 43;
+const int greenEDPin = 41;
+const int redLEDPin = 39;
 
 // Keypad Pins
 const int filasKeypad[4] = {22, 24, 26, 28};
@@ -142,7 +149,7 @@ int readBombsCount() {
     return count;
 }
 
-// Points Functions (Corrected Implementation)
+// Points Functions
 void savePoint(int value) {
     int count = readPointsHistory();
     if (count >= MAX_POINTS) {
@@ -188,11 +195,12 @@ void deleteBombs() {
     Serial.println("All bombs deleted");
 }
 
-void resetPoints() {
-    savePointsCount(0);
-    Serial.println("Points history cleared");
-}
+// void resetPoints() {
+//     savePointsCount(0);
+//     Serial.println("Points history cleared");
+// }
 
+// Verifies if the coordinates exists
 bool objectExists(int x_val, int y_val) {
     int count = readBombsCount();
     for (int i = 0; i < count; i++) {
@@ -217,6 +225,21 @@ void displayPointsHistory() {
     }
 }
 
+// Clean EEPROM
+// Frees the memory 
+void clean_eeprom() {
+    Serial.println("Clearing EEPROM...");
+    for (int i = 0; i < EEPROM.length(); i++) {
+        EEPROM.write(i, 0xFF);
+    }
+    #if !defined(ARDUINO_ARCH_AVR)
+        EEPROM.commit();
+    #endif
+    Serial.println("EEPROM cleared!");
+    saveBombsCount(0);
+    savePointsCount(0);
+}
+
 // Setup and Main Loop
 void setup() {
     Serial.begin(9600);
@@ -230,13 +253,30 @@ void setup() {
         digitalWrite(columnas[i], LOW); // Turn off rows
     }
     
+    // for (int j = 0; j < 8; j++) {
+    //     // pinMode(filas[i], OUTPUT);
+    //     pinMode(columnas[j], OUTPUT);
+    //     // digitalWrite(filas[i], HIGH); // Turn off columns
+    //     // digitalWrite(columnas[i], LOW); // Turn off rows
+    //     // digitalWrite(filas[i], LOW); // Turn off columns
+    //     digitalWrite(columnas[j], HIGH); // Turn off rows
+    // }
+
+    // LEDs of statuses
+    pinMode(blueLEDPin, OUTPUT);
+    pinMode(greenLEDPin, OUTPUT);
+    pinMode(redLEDPin, OUTPUT);
+    digitalWrite(blueLEDPin, LOW);
+    digitalWrite(greenLEDPin, LOW);
+    digitalWrite(redLEDPin, LOW);
+    
     // LCD Initialization
     lcd.init();
     lcd.backlight();
     lcd.setCursor(0, 0);
     lcd.print("Grupo 5 - Orga");
     lcd.setCursor(0, 1);
-    lcd.print("BUSCAMINAS");
+    lcd.print("MINESWEEPER");
 
     // Keypad Initialization
     for (int i = 0; i < 4; i++) {
@@ -285,30 +325,28 @@ void setup() {
 }
 
 void loop() {
-    keypad();
+    // Call keypad and bluetooth method only if the status is 'playing'
+    if(game_status == "playing"){
+        keypad();
+        inputBluetooth();
+    }
 
+    // Serial Listener
+    // Reads the input from the serial connections (backend)
     if (Serial.available() > 0) {
         String incoming = Serial.readStringUntil('\n');
         incoming.trim();
         
-        Serial.print("Received: ");
-        Serial.println(incoming);
-
         String request_backend[3];
         splitString(incoming, " ", request_backend, 3);
 
         if (request_backend[0] == "add_bomb") {
+            Serial.print("AddBomb x: ");
+            Serial.print(request_backend[1]);
+            Serial.print(" y: ");
+            Serial.println(request_backend[2]);
             Bomb new_bomb = {request_backend[1].toInt(), request_backend[2].toInt()};
             saveBomb(new_bomb);
-            
-            // Verification
-            int count = readBombsCount();
-            Bomb lastBomb = readBomb(count-1);
-            Serial.print("Last bomb: x=");
-            Serial.print(lastBomb.x);
-            Serial.print(", y=");
-            Serial.println(lastBomb.y);
-
         } else if (request_backend[0] == "reset_game") {
             savePoint(current_points_counter);
             current_points_counter = 0;
@@ -317,30 +355,32 @@ void loop() {
         } else if (request_backend[0] == "increment_points") {
             increment_points();
         } else if (request_backend[0] == "verify_bomb") {
+            Serial.print("verify_bomb x: ");
+            Serial.print(request_backend[1]);
+            Serial.print(" y: ");
+            Serial.println(request_backend[2]);
+
             verify_bomb(request_backend[1].toInt(), request_backend[2].toInt());
         } else if (request_backend[0] == "play_game") {
             game_status = "playing";
             Serial.println("Game started");
+            
+            // Show Message in LCD
             lcd.clear();
             lcd.print("PLAYING ...");
-            delay(1000);
+            delay(3000);
             lcd.clear();
             lcd.setCursor(0, 0);
-            lcd.print("Puntos: ");
+            lcd.print("Points: ");
             lcd.setCursor(0, 1);
             lcd.print(current_points_counter);
+            digitalWrite(blueLEDPin, HIGH);
             
         } else if (request_backend[0] == "show_points") {
             displayPointsHistory();
         } else if (request_backend[0] == "won"){
             won();
         }
-
-        // Display current bomb list
-        int bombCount = readBombsCount();
-        Serial.print("Active bombs: ");
-        Serial.println(bombCount);
-        displayPointsHistory();
     }
 }
 
@@ -367,66 +407,57 @@ void splitString(String input, String delimiter, String results[], int maxCount)
     }
 }
 
-void clean_eeprom() {
-    Serial.println("Clearing EEPROM...");
-    for (int i = 0; i < EEPROM.length(); i++) {
-        EEPROM.write(i, 0xFF);
-    }
-    #if !defined(ARDUINO_ARCH_AVR)
-        EEPROM.commit();
-    #endif
-    Serial.println("EEPROM cleared!");
-    saveBombsCount(0);
-    savePointsCount(0);
-}
-
-
-void keypad(){
-    if(game_status != "playing"){
-        return;
-    }
+// KEYPAD
+// Code for scanning when a button is pressed, some actions should be performed
+void keypad() {
+    static bool buttonPressed = false; // Track button state
 
     for (int f = 0; f < 4; f++) {
-        digitalWrite(filasKeypad[f], LOW); // Activamos una fila a la vez
+        digitalWrite(filasKeypad[f], LOW); // Activate one row at a time
 
         for (int c = 0; c < 4; c++) {
-            if (digitalRead(columnasKeypad[c]) == LOW) { // Si la columna está en LOW, hay un botón presionado
-                currentRow = f + 1;
-                currentColumn = c + 1;
-                
-                Serial.print("Tecla presionada en Fila ");
-                Serial.print(currentRow);
-                Serial.print(", Columna ");
-                Serial.println(currentColumn);
+            if (digitalRead(columnasKeypad[c]) == LOW) {
+                if (!buttonPressed) { // Only process if this is a new press
+                    buttonPressed = true;
+                    
+                    currentRow = f + 1;
+                    currentColumn = c + 1;
+                    
+                    Serial.print("Tecla presionada en Fila ");
+                    Serial.print(currentRow);
+                    Serial.print(", Columna ");
+                    Serial.println(currentColumn);
 
-                concatenatedCoord = String(currentRow) + String(currentColumn);
+                    concatenatedCoord = String(currentRow) + String(currentColumn);
 
-                coordDict.get(concatenatedCoord, result);
-                
-                if(!verify_bomb(result.x, result.y)){
-                    increment_points();
-                    break;
+                    coordDict.get(concatenatedCoord, result);
+                    
+                    if (!verify_bomb(result.x, result.y)) {
+                        increment_points();
+                    }
+
+                    if (won()) {
+                        digitalWrite(filasKeypad[f], HIGH); // Deactivate row before breaking
+                        return;
+                    }
                 }
-
-                if(won()){
-                    break;
-                }
-
-                // Wait until button is released (basic debounce)
-                while(digitalRead(columnasKeypad[c]) == LOW) {
-                    delay(1000);
-                }
                 
-                delay(1000); // Additional debounce delay
+                // Wait until button is released with proper debouncing
+                while (digitalRead(columnasKeypad[c]) == LOW) {
+                    delay(10);
+                }
+                buttonPressed = false; // Reset for next press
+                delay(50); // Additional debounce delay
             }
         }
 
-        digitalWrite(filasKeypad[f], HIGH); // Desactivamos la fila
+        digitalWrite(filasKeypad[f], HIGH); // Deactivate row
         delay(1); // Small delay between rows
     }
 }
 
-
+// VERIFY BOMB
+// Check if there's an existing bomb in the given coordinates
 bool verify_bomb(int x, int y){
     bool gameover = objectExists(x, y);
             
@@ -438,23 +469,33 @@ bool verify_bomb(int x, int y){
         current_points_counter = 0;
         deleteBombs();
         game_status = "game_over";
-        Serial.println("Game over! Points saved.");
+        Serial.println("Game over!");
+        
+        // Show msg in LCD 
         lcd.clear();
         lcd.print("GAMEOVER ...");
+        digitalWrite(blueLEDPin, LOW);
+        digitalWrite(redLEDPin, HIGH);
         delay(3000);
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Grupo 5 - Orga");
         lcd.setCursor(0, 1);
-        lcd.print("BUSCAMINAS");
+        lcd.print("MINESWEEPER");
+        digitalWrite(redLEDPin, LOW);
+
         return true;
     }
+
+    // turnOnLEDBombFree(x, y);
 
     Serial.println("GREEN - Bombs free!");
 
     return false;
 }
 
+// INCREMENT POINTS
+// Increments the points of the current game
 void increment_points(){
     current_points_counter++;
     Serial.print("Current points: ");
@@ -462,11 +503,13 @@ void increment_points(){
 
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Puntos: ");
+    lcd.print("Points: ");
     lcd.setCursor(0, 1);
     lcd.print(current_points_counter);
 }
 
+// TURN ON RED - MATRIX OF LED
+// Turns on the LED of the given coordinates
 void turnOnLEDBomb(int x, int y){
     // Turn on LED
     digitalWrite(filas[x-1], LOW);
@@ -480,21 +523,58 @@ void turnOnLEDBomb(int x, int y){
     digitalWrite(columnas[y-1], LOW);
 }
 
+// TURN ON RED - MATRIX OF LED
+// Turns on the LED of the given coordinates
+// void turnOnLEDBomb(int x, int y){
+//     // Turn on LED
+//     digitalWrite(filas[x-1], HIGH);
+//     digitalWrite(columnas[y-1], LOW);
+    
+//     // Wait 3 seconds
+//     delay(3000);
+
+//     // Turn off LED
+//     digitalWrite(filas[x-1], LOW);
+//     digitalWrite(columnas[y-1], HIGH);
+// }
+
+// TURN ON GREEN - MATRIX OF LED
+// Turns on the LED of the given coordinates
+// void turnOnLEDBombFree(int x, int y){
+//     // Turn on LED
+//     digitalWrite(columnas[y+3], LOW);
+//     digitalWrite(filas[x-1], HIGH);
+    
+//     // Wait 3 seconds
+//     delay(3000);
+
+//     // Turn off LED
+//     digitalWrite(columnas[y+3], HIGH);
+//     digitalWrite(filas[x-1], LOW);
+// }
+
+// BLUETOOTH
+// Serial communication between Arduino and Phone(Bluetooth) via serial
 void inputBluetooth(){
     if (Serial1.available()) {
         char data = Serial1.read();
         msgBluetooth = msgBluetooth + data;
 
-
         if(msgBluetooth.length() == 3){
+            Serial.print("Should check coordinates: ");
+            Serial.println(msgBluetooth);
+
             String coordBluetooth[3];
             splitString(msgBluetooth, ",", coordBluetooth, 3);
             verify_bomb(coordBluetooth[1].toInt(), coordBluetooth[2].toInt());
+            won();
             msgBluetooth = "";
         }   
     }
 }
 
+// WON
+// Checks if the user has won
 bool won(){
 
     if(current_points_counter == (16 - readBombsCount())){
@@ -504,6 +584,8 @@ bool won(){
         Serial.println("Game over! Points saved.");
         lcd.clear();
         lcd.print("YOU'VE WON :)");
+        digitalWrite(blueLEDPin, LOW);
+        digitalWrite(greenLEDPin, HIGH);
         delay(3000);
         lcd.clear();
         lcd.setCursor(0, 0);
@@ -511,17 +593,12 @@ bool won(){
         lcd.setCursor(0, 1);
         lcd.print("MINESWEEPER");
         game_status = "won";
+        digitalWrite(greenLEDPin, LOW);
         return true;
     }
 
     return false;
 }
-
-
-
-
-
-
 
 
 
