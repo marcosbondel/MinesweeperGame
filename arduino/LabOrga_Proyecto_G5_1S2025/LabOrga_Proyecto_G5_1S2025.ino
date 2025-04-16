@@ -115,6 +115,7 @@ public:
 CoordinateDictionary coordDict;
 Coordinate result;
 String msgBluetooth = "";
+String game_mode = "";
 
 
 // Bomb Functions
@@ -346,6 +347,13 @@ void loop() {
 
             verify_bomb(request_backend[1].toInt(), request_backend[2].toInt());
         } else if (request_backend[0] == "play_game") {
+
+            if(game_status == "playing"){
+                return;
+            }
+
+            game_mode = request_backend[1];
+
             game_status = "playing";
             Serial.println("Game started");
             
@@ -396,6 +404,10 @@ void splitString(String input, String delimiter, String results[], int maxCount)
 // KEYPAD
 // Code for scanning when a button is pressed, some actions should be performed
 void keypad() {
+    if(game_mode != "Keypad"){
+        return;
+    }
+
     static bool buttonPressed = false; // Track button state
 
     for (int f = 0; f < 4; f++) {
@@ -469,6 +481,7 @@ bool verify_bomb(int x, int y){
         lcd.setCursor(0, 1);
         lcd.print("MINESWEEPER");
         digitalWrite(redLEDPin, LOW);
+        game_mode = "";
 
         return true;
     }
@@ -512,6 +525,10 @@ void turnOnLEDBomb(int x, int y){
 // BLUETOOTH
 // Serial communication between Arduino and Phone(Bluetooth) via serial
 void inputBluetooth(){
+    if(game_mode != "Bluetooth"){
+        return;
+    }
+
     if (Serial1.available()) {
         char data = Serial1.read();
         msgBluetooth = msgBluetooth + data;
@@ -552,6 +569,7 @@ bool won(){
         lcd.print("MINESWEEPER");
         game_status = "won";
         digitalWrite(greenLEDPin, LOW);
+        game_mode = "";
         return true;
     }
 

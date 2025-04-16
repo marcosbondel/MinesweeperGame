@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint
+from flask import Flask, request
 from utils.responder import respond_with_success, respond_with_error, respond_with_not_found
 from controllers.bombs_controller import BombBlueprint
 from flask_cors import CORS
@@ -27,9 +27,15 @@ class FlaskServer:
         
         @self.app.route('/game/play.json', methods=['POST'])
         def play_game():
-            Ram.play_game()
+            Ram.play_game(request.get_json()['game_mode'])
 
             return respond_with_success("Game played successfully")
+        
+        @self.app.route('/game/top5.json', methods=['POST'])
+        def top5():
+            Ram.top5()
+
+            return respond_with_success("Top 5 players retrieved successfully")
 
     def read_db(self):
         pass

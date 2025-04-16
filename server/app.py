@@ -1,4 +1,3 @@
-import atexit, subprocess
 from config import FlaskServer
 from utils.serial_connection import ArduinoSerial
 from db.ram import Ram
@@ -14,6 +13,5 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
-        # arduino.close()
     finally:
         Ram.arduino.close()

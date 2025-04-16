@@ -18,6 +18,7 @@ class Ram:
 
     @staticmethod
     def write(action, data = {}):
+        return
         if action == "add_bomb":
             Ram.arduino.send_message(f"add_bomb {data.x} {data.y}")
         elif action == "reset_game":
@@ -27,9 +28,11 @@ class Ram:
         elif action == "verify_bomb":
             Ram.arduino.send_message(f"verify_bomb {data.x} {data.y}")
         elif action == "play_game":
-            Ram.arduino.send_message("play_game")
+            Ram.arduino.send_message("play_game", data)
         elif action == "won":
             Ram.arduino.send_message("won")
+        elif action == "top5":
+            Ram.arduino.send_message("show_top5")
         
     @staticmethod
     def add_bomb(bomb):
@@ -48,12 +51,16 @@ class Ram:
         Ram.write('increment_points')
     
     @staticmethod
-    def play_game():
-        Ram.write("play_game")
+    def play_game(mode):
+        Ram.write("play_game", mode)
 
     @staticmethod
     def verify_bomb(bomb):
         Ram.write("verify_bomb", bomb)
+
+    @staticmethod
+    def top5():
+        Ram.write('top5')
     
     @staticmethod
     def won():
