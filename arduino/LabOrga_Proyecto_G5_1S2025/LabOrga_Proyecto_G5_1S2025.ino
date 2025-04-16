@@ -12,9 +12,9 @@ const int columnas[8] = {40, 42, 44, 46, 51, 49, 47, 45};
 const int filas[4] = {48, 50, 52, 53};
 
 // LEDS for manageing statuses: blue, green and red
-const int blueLEDPin = 43;
-const int greenEDPin = 41;
-const int redLEDPin = 39;
+const int blueLEDPin = 4;
+const int greenLEDPin = 3;
+const int redLEDPin = 2;
 
 // Keypad Pins
 const int filasKeypad[4] = {22, 24, 26, 28};
@@ -195,11 +195,6 @@ void deleteBombs() {
     Serial.println("All bombs deleted");
 }
 
-// void resetPoints() {
-//     savePointsCount(0);
-//     Serial.println("Points history cleared");
-// }
-
 // Verifies if the coordinates exists
 bool objectExists(int x_val, int y_val) {
     int count = readBombsCount();
@@ -253,15 +248,6 @@ void setup() {
         digitalWrite(columnas[i], LOW); // Turn off rows
     }
     
-    // for (int j = 0; j < 8; j++) {
-    //     // pinMode(filas[i], OUTPUT);
-    //     pinMode(columnas[j], OUTPUT);
-    //     // digitalWrite(filas[i], HIGH); // Turn off columns
-    //     // digitalWrite(columnas[i], LOW); // Turn off rows
-    //     // digitalWrite(filas[i], LOW); // Turn off columns
-    //     digitalWrite(columnas[j], HIGH); // Turn off rows
-    // }
-
     // LEDs of statuses
     pinMode(blueLEDPin, OUTPUT);
     pinMode(greenLEDPin, OUTPUT);
@@ -523,36 +509,6 @@ void turnOnLEDBomb(int x, int y){
     digitalWrite(columnas[y-1], LOW);
 }
 
-// TURN ON RED - MATRIX OF LED
-// Turns on the LED of the given coordinates
-// void turnOnLEDBomb(int x, int y){
-//     // Turn on LED
-//     digitalWrite(filas[x-1], HIGH);
-//     digitalWrite(columnas[y-1], LOW);
-    
-//     // Wait 3 seconds
-//     delay(3000);
-
-//     // Turn off LED
-//     digitalWrite(filas[x-1], LOW);
-//     digitalWrite(columnas[y-1], HIGH);
-// }
-
-// TURN ON GREEN - MATRIX OF LED
-// Turns on the LED of the given coordinates
-// void turnOnLEDBombFree(int x, int y){
-//     // Turn on LED
-//     digitalWrite(columnas[y+3], LOW);
-//     digitalWrite(filas[x-1], HIGH);
-    
-//     // Wait 3 seconds
-//     delay(3000);
-
-//     // Turn off LED
-//     digitalWrite(columnas[y+3], HIGH);
-//     digitalWrite(filas[x-1], LOW);
-// }
-
 // BLUETOOTH
 // Serial communication between Arduino and Phone(Bluetooth) via serial
 void inputBluetooth(){
@@ -561,12 +517,14 @@ void inputBluetooth(){
         msgBluetooth = msgBluetooth + data;
 
         if(msgBluetooth.length() == 3){
-            Serial.print("Should check coordinates: ");
-            Serial.println(msgBluetooth);
+            Serial1.print("Should check coordinates: ");
+            Serial1.println(msgBluetooth);
 
-            String coordBluetooth[3];
-            splitString(msgBluetooth, ",", coordBluetooth, 3);
-            verify_bomb(coordBluetooth[1].toInt(), coordBluetooth[2].toInt());
+            String coordBluetooth[2];
+            splitString(msgBluetooth, ",", coordBluetooth, 2);
+            if(!verify_bomb(coordBluetooth[0].toInt(), coordBluetooth[1].toInt())) {
+                increment_points();
+            }
             won();
             msgBluetooth = "";
         }   
