@@ -10,6 +10,8 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const configured = ref(Ram.configured)
+let game_mode = ref('')
+let status = ref('')
 
 onMounted(async() => {
     await Ram.fetchMatrixRepresentation()
@@ -20,6 +22,12 @@ onMounted(async() => {
 const onPlayClicked = async() => {
     // Handle play button click
     console.log('Play button clicked');
+
+    if(status.value == 'playing') {
+        router.push('/game')
+        return;
+    }
+
     if(configured.value === 'True') {
 
         const response = await fetch('http://localhost:3000/game/play.json', {
@@ -27,7 +35,7 @@ const onPlayClicked = async() => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({}), // Adjust the coordinates as needed
+            body: JSON.stringify({ game_mode: game_mode.value}), // Adjust the coordinates as needed
         });
 
         if (!response.ok) {
@@ -36,7 +44,8 @@ const onPlayClicked = async() => {
             return;
         }
 
-        // const data = await response.json();
+        Ram.game_mode = game_mode.value
+        Ram.status = 'playing'
 
         router.push('/game')
     } else {
@@ -44,11 +53,16 @@ const onPlayClicked = async() => {
     }
 };
 
+onMounted(() => {
+    game_mode.value = Ram.game_mode
+    status.value = Ram.status
+});
+
 </script>
 
 <template>
     <div class="home">
-        <HeaderComponent/>
+        <HeaderComponent headerMode="Home"/>
         <div class="fixed-grid container">
             <div class="grid is-flex has-align-items-center is-justify-content-space-around">
                 <div class="cell">
@@ -66,19 +80,32 @@ const onPlayClicked = async() => {
                     </RouterLink>
                 </div>
                 <div class="cell">
-                    <a @click.prevent="onPlayClicked">
-                        <div class="card-home-content card-home-content-play has-text-dark has-text-weight-bold" disabled>
-                            <div class="mb-4">
-                                <span class="icon-text">
-                                    <span class="icon">
-                                        <a class="fas fa-play play-icon entry-settings">
-                                        </a>
+                    <form class="form has-text-right form-play" @submit.prevent="onPlayClicked">
+
+                    
+
+                        <button>
+                            <div class="card-home-content card-home-content-play has-text-dark has-text-weight-bold" disabled>
+                                <div class="mb-4">
+                                    <span class="icon-text">
+                                        <span class="icon">
+                                            <a class="fas fa-play play-icon entry-settings">
+                                            </a>
+                                        </span>
                                     </span>
-                                </span>
+                                </div>
+                                <p>Play</p>
                             </div>
-                            <p>Play</p>
+                        </button>
+                        <div className="select">
+                            <select v-model="game_mode" required :disabled="status != 'not_started'">
+                                <option disabled>Game mode</option>
+                                <option>Web</option>
+                                <option>Keypad</option>
+                                <option>Bluetooth</option>
+                            </select>
                         </div>
-                    </a>
+                    </form>
                 </div>
             </div>
             <article v-if="configured != 'True'" class="message is-warning">

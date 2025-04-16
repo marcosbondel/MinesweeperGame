@@ -14,6 +14,7 @@ const props = defineProps({
 
 const coordinates = ref([]);
 const fileInput = ref(null); // Referencia para el input de archivo oculto
+let game_mode = ref('')
 
 // Función para manejar el clic en el botón Import
 const handleImportClick = () => {
@@ -138,6 +139,8 @@ const verifyBomb = async(e, x, y) => {
     if(data === "BOOM"){
         showErrorAlert('BOOM', 'Has perdido');
         document.querySelector(`#cell-game-${x}-${y}`).classList.add('is-danger');
+        Ram.game_mode = '';
+        Ram.status = 'not_started'
         router.push('/')
     }else if(data === "SAFE"){
         document.querySelector(`#cell-game-${x}-${y}`).classList.add('is-primary');
@@ -145,10 +148,12 @@ const verifyBomb = async(e, x, y) => {
         setTimeout(() => {
             document.querySelector(`#cell-game-${x}-${y}`).classList.remove('is-primary');
         }, 1000);
+
     } else if(data === "WIN"){
         showSuccessAlert('WIN', 'Has ganado');
         document.querySelector(`#cell-game-${x}-${y}`).classList.add('is-success');
         router.push('/')
+        Ram.status = 'not_started'
     }
 };
 
@@ -156,6 +161,7 @@ onMounted(async () => {
     await Ram.fetchMatrixRepresentation()
     coordinates.value = Ram.matrix_representation
     console.log(`Mode: ${props.mode}`);
+    game_mode.value = Ram.game_mode
 });
 </script>
 
@@ -188,12 +194,26 @@ onMounted(async () => {
             <div class="columns" v-for="(valuex, indexx) in coordinates" :key="indexx">
                 <div class="column" v-for="(valuey, indexy) in valuex" :key="indexy">
                     <div class="bombs-board-item">
-                        <button v-if="mode == 'settings'" @click="(e) => verify(e, indexx, indexy, valuey)" class="button is-white button-board" :class="{ 'is-danger': valuey }" :id="`cell-board-${indexx}-${indexy}`">
+                        <button
+                            v-if="mode == 'settings'" 
+                            @click="(e) => verify(e, indexx, indexy, valuey)" 
+                            class="button is-white button-board" 
+                            :class="{ 'is-danger': valuey }" 
+                            :id="`cell-board-${indexx}-${indexy}`">
+
                             <i class="fa-solid fa-land-mine-on" ></i>
+
                         </button>
                         
-                        <button v-if="mode == 'game'" @click="(e) => verify(e, indexx, indexy)" class="button is-white" :id="`cell-game-${indexx}-${indexy}`">
+                        <button 
+                            v-if="mode == 'game'" 
+                            @click="(e) => verify(e, indexx, indexy)" 
+                            class="button is-white" 
+                            :id="`cell-game-${indexx}-${indexy}`"
+                            :disabled="game_mode != 'Web'">
+                            
                             <i class="fa-solid fa-land-mine-on" ></i>
+
                         </button>
                     </div>
                 </div>

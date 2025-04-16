@@ -64,3 +64,15 @@
     height: 3rem;
     width: 3rem;
 } 
+
+.select {
+    width: 100%;
+}
+
+select {
+    width: 100%;
+}
+
+.form-play {
+    display: inline-grid!important;
+}

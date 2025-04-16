@@ -3,6 +3,8 @@ export default class Ram {
     static matrix_representation = []
     static points = 0
     static configured = false
+    static game_mode = ""
+    static status = "not_started"
 
     static async fetchBombs(){
         const response = await fetch('http://localhost:3000/bombs.json');

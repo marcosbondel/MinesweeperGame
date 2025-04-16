@@ -9,7 +9,7 @@ import GoBackComponent from '../components/GoBack.vue';
 <template>
     <div>
         <div class="container-app">
-            <HeaderComponent title="Game"/>
+            <HeaderComponent title="Game" headerMode="Game"/>
             <GoBackComponent/>
             <BoardComponent class="mt-6" mode="game"/>
         </div>
