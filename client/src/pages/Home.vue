@@ -53,6 +53,25 @@ const onPlayClicked = async() => {
     }
 };
 
+const showTop5 = async() => {
+    const response = await fetch('http://localhost:3000/game/top5.json', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}), // Adjust the coordinates as needed
+    });
+
+    
+    if (!response.ok) {
+        const errorData = await response.json();  // Parse the error JSON
+        showErrorAlert('Error', errorData.message || 'Error when showing Top5');
+        return;
+    }
+
+    showSuccessAlert('Top5', 'Top5 shown successfully');
+}
+
 onMounted(() => {
     game_mode.value = Ram.game_mode
     status.value = Ram.status
@@ -63,6 +82,11 @@ onMounted(() => {
 <template>
     <div class="home">
         <HeaderComponent headerMode="Home"/>
+        <form v-if="status != 'playing'" class="has-text-centered" @submit.prevent="showTop5">
+            <button type="submit" class="button is-black">
+                Show Top 5
+            </button>
+        </form>
         <div class="fixed-grid container">
             <div class="grid is-flex has-align-items-center is-justify-content-space-around">
                 <div class="cell">
@@ -81,9 +105,6 @@ onMounted(() => {
                 </div>
                 <div class="cell">
                     <form class="form has-text-right form-play" @submit.prevent="onPlayClicked">
-
-                    
-
                         <button>
                             <div class="card-home-content card-home-content-play has-text-dark has-text-weight-bold" disabled>
                                 <div class="mb-4">
