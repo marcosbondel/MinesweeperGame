@@ -17,7 +17,7 @@
     pip freeze > requirements.txt
 
     # In case, you want to install the dependencies in the requirements.txt
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
 ```
 
 ## Troubleshooting
