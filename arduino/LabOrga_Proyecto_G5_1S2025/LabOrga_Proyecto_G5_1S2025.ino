@@ -364,6 +364,8 @@ void loop() {
             displayPointsHistory();
         } else if (request_backend[0] == "won"){
             won();
+        } else if(request_backend[0] == "show_top5"){
+            displayTop5Scores();
         }
     }
 }
@@ -556,6 +558,67 @@ bool won(){
     return false;
 }
 
+int* getTop5Scores() {
+    static int topScores[5] = {0, 0, 0, 0, 0}; // Initialize all to 0
+    int count = readPointsHistory();
+    
+    // If no scores exist, return all zeros
+    if (count == 0) {
+        return topScores;
+    }
+    
+    // Read all scores into a temporary array
+    int scores[MAX_POINTS];
+    for (int i = 0; i < count; i++) {
+        scores[i] = readPoint(i);
+    }
+    
+    // Sort the scores in descending order (using simple bubble sort)
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (scores[j] < scores[j+1]) {
+                // Swap scores
+                int temp = scores[j];
+                scores[j] = scores[j+1];
+                scores[j+1] = temp;
+            }
+        }
+    }
+    
+    // Copy the top 5 (or fewer if count < 5)
+    int numToCopy = (count < 5) ? count : 5;
+    for (int i = 0; i < numToCopy; i++) {
+        topScores[i] = scores[i];
+    }
+    
+    return topScores;
+}
 
+void displayTop5Scores() {
+    int* topScores = getTop5Scores();
+    String topScoresStr = "";
+    
+    Serial.println("Top 5 Scores:");
+    for (int i = 0; i < 5; i++) {
+        Serial.print(i+1);
+        Serial.print(": ");
+        Serial.println(topScores[i]);
+        topScoresStr = topScoresStr + topScores[i];
+    }
+
+    // Show Top5 in LCD
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Top 5 - Points");
+    lcd.setCursor(0, 1);
+    lcd.print(topScoresStr);
+    delay(5000);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Grupo 5 - Orga");
+    lcd.setCursor(0, 1);
+    lcd.print("MINESWEEPER");
+
+}
 
 
