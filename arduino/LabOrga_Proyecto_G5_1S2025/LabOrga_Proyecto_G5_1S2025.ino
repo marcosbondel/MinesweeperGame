@@ -6,9 +6,7 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // LED Matrix Pins
-// const int columnas[4] = {40, 42, 44, 46};
-// const int filas[4] = {48, 50, 52, 53};
-const int columnas[8] = {40, 42, 44, 46, 51, 49, 47, 45};
+const int columnas[8] = {40, 42, 44, 46};
 const int filas[4] = {48, 50, 52, 53};
 
 // LEDS for manageing statuses: blue, green and red
