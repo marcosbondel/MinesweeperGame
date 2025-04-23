@@ -76,9 +76,11 @@ class Ram:
     @staticmethod
     def reset_backend():
         Ram.bombs_matrix_representation = np.zeros((4, 4), dtype=int)
-        # Ram.history_points.append(Ram.points)
+        if Ram.points > 0:
+            Ram.history_points.append(Ram.points)
         Ram.bombs = []
         Ram.points = 0
+        Ram.write('reset_game')
     
     @staticmethod
     def bombs_configured():

@@ -6,7 +6,7 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ADD COLON COMMA FINAL_DELIMITER INIT_DELIMITER MLINE_COMMENT NUMBER OLINE_COMMENT X_COORD Y_COORDconfig : INIT_DELIMITER statements FINAL_DELIMITERstatements : statement\n                  | statements statementstatement : add_statement\n                 | newlineadd_statement : ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBERnewline : '
+_lr_signature = 'ADD COLON COMMA FINAL_DELIMITER INIT_DELIMITER MLINE_COMMENT NUMBER OLINE_COMMENT X_COORD Y_COORDconfig : INIT_DELIMITER statements FINAL_DELIMITERstatements : statement\n| statements statementstatement : add_statement\n| newlineadd_statement : ADD X_COORD COLON NUMBER COMMA Y_COORD COLON NUMBERnewline : '
     
 _lr_action_items = {'INIT_DELIMITER':([0,],[2,]),'$end':([1,8,],[0,-1,]),'ADD':([2,3,4,5,6,9,16,],[7,7,-2,-4,-5,-3,-6,]),'FINAL_DELIMITER':([2,3,4,5,6,9,16,],[-7,8,-2,-4,-5,-3,-6,]),'X_COORD':([7,],[10,]),'COLON':([10,14,],[11,15,]),'NUMBER':([11,15,],[12,16,]),'COMMA':([12,],[13,]),'Y_COORD':([13,],[14,]),}
 

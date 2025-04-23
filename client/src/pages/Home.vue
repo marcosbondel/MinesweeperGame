@@ -88,6 +88,13 @@ const resetGame = async() => {
     }
 
     showSuccessAlert('Reset', 'Reset successfully');
+
+    Ram.configured = false
+    Ram.bombs = []
+    Ram.game_mode = ''
+    Ram.status = 'not_started'
+    configured.value = false
+    status.value = 'not_started'
 }
 
 onMounted(() => {
