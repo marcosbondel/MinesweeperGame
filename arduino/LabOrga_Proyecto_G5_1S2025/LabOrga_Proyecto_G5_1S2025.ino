@@ -486,9 +486,11 @@ bool verify_bomb(int x, int y){
         return true;
     }
 
-    // turnOnLEDBombFree(x, y);
-
     Serial.println("GREEN - Bombs free!");
+    Serial.print("x: ");
+    Serial.println(x);
+    Serial.print("y: ");
+    Serial.println(y);
 
     return false;
 }
@@ -621,7 +623,11 @@ void displayTop5Scores() {
         Serial.print(i+1);
         Serial.print(": ");
         Serial.println(topScores[i]);
-        topScoresStr = topScoresStr + topScores[i];
+        if(i == 4){
+            topScoresStr = topScoresStr + topScores[i];
+        }else{
+            topScoresStr = topScoresStr + topScores[i] + ", ";
+        }
     }
 
     // Show Top5 in LCD
@@ -636,7 +642,6 @@ void displayTop5Scores() {
     lcd.print("Grupo 5 - Orga");
     lcd.setCursor(0, 1);
     lcd.print("MINESWEEPER");
-
 }
 
 
