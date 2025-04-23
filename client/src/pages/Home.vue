@@ -72,6 +72,24 @@ const showTop5 = async() => {
     showSuccessAlert('Top5', 'Top5 shown successfully');
 }
 
+const resetGame = async() => {
+    const response = await fetch('http://localhost:3000/game/reset.json', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}), // Adjust the coordinates as needed
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();  // Parse the error JSON
+        showErrorAlert('Error', errorData.message || 'Error when showing top');
+        return;
+    }
+
+    showSuccessAlert('Reset', 'Reset successfully');
+}
+
 onMounted(() => {
     game_mode.value = Ram.game_mode
     status.value = Ram.status
@@ -85,6 +103,11 @@ onMounted(() => {
         <form v-if="status != 'playing'" class="has-text-centered" @submit.prevent="showTop5">
             <button type="submit" class="button is-black">
                 Show Top 5
+            </button>
+        </form>
+        <form class="has-text-centered mt-1" @submit.prevent="resetGame">
+            <button type="submit" class="button is-info">
+                Reset
             </button>
         </form>
         <div class="fixed-grid container">
