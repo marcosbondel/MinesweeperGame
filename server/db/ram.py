@@ -18,7 +18,6 @@ class Ram:
 
     @staticmethod
     def write(action, data = {}):
-        return
         if action == "add_bomb":
             Ram.arduino.send_message(f"add_bomb {data.x} {data.y}")
         elif action == "reset_game":
@@ -28,7 +27,7 @@ class Ram:
         elif action == "verify_bomb":
             Ram.arduino.send_message(f"verify_bomb {data.x} {data.y}")
         elif action == "play_game":
-            Ram.arduino.send_message("play_game", data)
+            Ram.arduino.send_message(f"play_game {data}")
         elif action == "won":
             Ram.arduino.send_message("won")
         elif action == "top5":
@@ -73,6 +72,13 @@ class Ram:
         Ram.bombs = []
         Ram.points = 0
         Ram.write('reset_game')
+    
+    @staticmethod
+    def reset_backend():
+        Ram.bombs_matrix_representation = np.zeros((4, 4), dtype=int)
+        # Ram.history_points.append(Ram.points)
+        Ram.bombs = []
+        Ram.points = 0
     
     @staticmethod
     def bombs_configured():

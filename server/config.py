@@ -37,6 +37,12 @@ class FlaskServer:
 
             return respond_with_success("Top 5 players retrieved successfully")
 
+        @self.app.route('/game/reset.json', methods=['POST'])
+        def reset_game():
+            Ram.reset_backend()
+
+            return respond_with_success("Reset successfully")
+
     def read_db(self):
         pass
 
