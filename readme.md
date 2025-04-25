@@ -252,6 +252,7 @@ yarn dev
 
 4. **Pair Bluetooth**
 Download the BluetoothLE app through AppStore
+
 ![Bluetooth App](./docs/imgs/11.jpeg)  
 ---
 
