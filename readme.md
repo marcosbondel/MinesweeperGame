@@ -1,4 +1,4 @@
-# 💣 Minesweeper Circuit — Hardware Game with EEPROM & Bluetooth Control
+# 💣 Minesweeper Circuit — Web and Hardware Game with EEPROM & Bluetooth Control
 
 ## 📖 Table of Contents
 1. [Project Overview](#-project-overview)
